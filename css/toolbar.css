@@ -1,0 +1,75 @@
+/* ============================================
+   toolbar.css - 顶部工具栏样式
+   ============================================ */
+
+/* --- 顶部工具栏容器 --- */
+.top-toolbar { height: var(--toolbar-height); background: var(--bg-surface); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 12px; gap: 4px; flex-shrink: 0; user-select: none; backdrop-filter: blur(8px); z-index: 100; }
+
+/* --- 三区布局 --- */
+.toolbar-left { display: flex; align-items: center; gap: 4px; flex: 1; overflow: hidden; }
+.toolbar-center { display: flex; align-items: center; justify-content: center; flex-shrink: 0; padding: 0 12px; }
+.toolbar-right { display: flex; align-items: center; gap: 4px; flex: 1; justify-content: flex-end; }
+
+/* --- Logo --- */
+.app-logo { width: 28px; height: 28px; flex-shrink: 0; display: flex; align-items: center; opacity: 0.9; transition: opacity var(--transition-fast); margin-right: 4px; }
+.app-logo:hover { opacity: 1; }
+.app-logo svg { width: 100%; height: 100%; }
+
+/* --- 分隔线 --- */
+.toolbar-divider { width: 1px; height: 22px; background: var(--border); margin: 0 4px; flex-shrink: 0; }
+
+/* --- 工具按钮组 --- */
+.tool-group { display: flex; align-items: center; gap: 2px; background: var(--bg-base); border-radius: var(--radius-sm); padding: 3px; }
+
+/* --- 工具按钮 --- */
+.tool-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; width: 44px; height: 40px; border-radius: 5px; color: var(--text-secondary); background: transparent; cursor: pointer; transition: var(--transition-fast); position: relative; }
+.tool-btn svg { width: 18px; height: 18px; flex-shrink: 0; }
+.tool-label { font-size: 9px; font-weight: 500; line-height: 1; letter-spacing: 0.01em; }
+.tool-btn:hover { color: var(--text-primary); background: var(--bg-elevated); }
+.tool-btn.active { color: var(--accent-purple-light); background: rgba(124, 92, 191, 0.15); }
+
+/* --- 画笔设置区 --- */
+.brush-settings { display: flex; align-items: center; gap: 8px; margin-left: 4px; }
+
+/* 颜色选择器 */
+.color-picker-wrapper { position: relative; cursor: pointer; }
+.color-display { width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--border); cursor: pointer; transition: var(--transition-fast); box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1); }
+.color-display:hover { border-color: var(--text-muted); transform: scale(1.1); }
+.color-picker-wrapper input[type="color"] { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; border: none; padding: 0; }
+
+/* 滑块组 */
+.slider-group { display: flex; align-items: center; gap: 6px; height: 36px; }
+.slider-group label { font-size: 11px; color: var(--text-muted); white-space: nowrap; font-weight: 500; }
+.slider { -webkit-appearance: none; appearance: none; width: 80px; height: 4px; border-radius: 4px; background: var(--bg-active); outline: none; cursor: pointer; transition: background var(--transition-fast); }
+.slider:hover { background: var(--bg-hover); }
+.slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 14px; height: 14px; border-radius: 50%; background: var(--text-primary); cursor: pointer; box-shadow: 0 0 0 2px var(--bg-surface); transition: var(--transition-fast); }
+.slider::-webkit-slider-thumb:hover { background: var(--accent-purple-light); transform: scale(1.2); }
+.slider::-moz-range-thumb { width: 14px; height: 14px; border-radius: 50%; background: var(--text-primary); cursor: pointer; border: none; box-shadow: 0 0 0 2px var(--bg-surface); }
+.slider-val { font-size: 11px; color: var(--text-secondary); min-width: 28px; text-align: right; font-variant-numeric: tabular-nums; }
+
+/* --- 画布信息显示 --- */
+.canvas-info { font-size: 11px; color: var(--text-muted); font-weight: 500; letter-spacing: 0.03em; font-variant-numeric: tabular-nums; }
+
+/* --- 操作按钮 --- */
+.action-btn { display: flex; align-items: center; gap: 5px; padding: 6px 10px; border-radius: var(--radius-sm); color: var(--text-secondary); background: transparent; cursor: pointer; transition: var(--transition-fast); white-space: nowrap; font-size: 12px; font-weight: 500; }
+.action-btn svg { width: 16px; height: 16px; flex-shrink: 0; }
+.action-btn span { display: inline-block; }
+.action-btn:hover { color: var(--text-primary); background: var(--bg-elevated); }
+.action-btn:active { background: var(--bg-active); }
+.action-btn.primary { background: rgba(124, 92, 191, 0.15); color: var(--accent-purple-light); border: 1px solid rgba(124, 92, 191, 0.25); }
+.action-btn.primary:hover { background: rgba(124, 92, 191, 0.25); border-color: rgba(124, 92, 191, 0.4); color: #b49ae8; }
+
+/* --- 透视辅助浮动面板 --- */
+.perspective-panel { position: fixed; top: calc(var(--toolbar-height) + 10px); left: 180px; background: var(--bg-elevated); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 10px 12px; box-shadow: var(--shadow-md); z-index: 200; display: none; animation: panelFadeIn 0.15s ease; min-width: 180px; }
+.perspective-panel.visible { display: block !important; }
+
+@keyframes panelFadeIn {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.persp-title { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+.persp-options { display: flex; gap: 4px; }
+.persp-btn { flex: 1; padding: 6px 4px; border-radius: 5px; border: 1px solid var(--border); background: var(--bg-surface); color: var(--text-secondary); font-size: 11px; font-weight: 500; cursor: pointer; transition: var(--transition-fast); text-align: center; }
+.persp-btn:hover { color: var(--text-primary); border-color: var(--accent-purple); background: rgba(124, 92, 191, 0.1); }
+.persp-btn.active { background: rgba(124, 92, 191, 0.2); border-color: var(--accent-purple); color: var(--accent-purple-light); }
