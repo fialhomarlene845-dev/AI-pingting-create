@@ -1,0 +1,107 @@
+/* ============================================
+   canvas.css - 画布区域样式
+   ============================================ */
+
+/* --- 工作区（左画布 + 右 AI 面板） --- */
+.workspace { display: flex; flex: 1; overflow: hidden; position: relative; }
+.workspace.ai-collapsed .ai-panel { width: 0; overflow: hidden; }
+.workspace.ai-collapsed .ai-panel-toggle svg { transform: rotate(180deg); }
+
+/* --- AI 面板切换按钮 --- */
+.ai-panel-toggle {
+    position: absolute;
+    right: 300px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 50;
+    width: 20px;
+    height: 48px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-right: none;
+    border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-muted);
+    transition: var(--transition-fast);
+}
+
+.workspace.ai-collapsed .ai-panel-toggle { right: 0; border-right: 1px solid var(--border); border-left: none; border-radius: 0 var(--radius-sm) var(--radius-sm) 0; }
+.ai-panel-toggle svg { width: 12px; height: 12px; transition: transform var(--transition-normal); }
+.ai-panel-toggle:hover { color: var(--text-primary); background: var(--bg-active); }
+
+/* --- 画布区域 --- */
+.canvas-area {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    background-color: var(--bg-base);
+    /* 棋盘格背景 - 表示透明区域 */
+    background-image:
+        linear-gradient(45deg, #222 25%, transparent 25%),
+        linear-gradient(-45deg, #222 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #222 75%),
+        linear-gradient(-45deg, transparent 75%, #222 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 画布包裹层（用于居中） */
+.canvas-wrapper { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; pointer-events: none; }
+
+/* 画布容器（可变换） */
+.canvas-container { position: relative; transform-origin: center center; pointer-events: all; will-change: transform; }
+
+/* 画布阴影效果 */
+.canvas-container::after {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: 1px;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.06), 0 4px 32px rgba(0, 0, 0, 0.6), 0 16px 80px rgba(0, 0, 0, 0.4);
+    pointer-events: none;
+    z-index: -1;
+}
+
+/* 按钮触发缩放时添加过渡 */
+.canvas-container.animating { transition: transform 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+
+/* 主画布 */
+#mainCanvas { display: block; background: #ffffff; cursor: crosshair; touch-action: none; user-select: none; -webkit-user-select: none; }
+
+/* 透视辅助叠加层 */
+#perspectiveCanvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+
+/* 橡皮擦光标 */
+.canvas-container.eraser-mode #mainCanvas { cursor: url("data:image/svg+xml,...") 12 12, crosshair; }
+
+/* 平移光标 */
+.canvas-container.panning #mainCanvas, .canvas-container.panning { cursor: grabbing !important; }
+
+/* --- 缩放控制 --- */
+.zoom-controls {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 3px 6px;
+    box-shadow: var(--shadow-sm);
+    backdrop-filter: blur(10px);
+    z-index: 10;
+}
+
+.zoom-btn { display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; color: var(--text-secondary); font-size: 16px; font-weight: 400; cursor: pointer; transition: var(--transition-fast); line-height: 1; }
+.zoom-btn:hover { color: var(--text-primary); background: var(--bg-active); }
+.zoom-level { font-size: 11px; font-weight: 600; color: var(--text-secondary); min-width: 40px; text-align: center; font-variant-numeric: tabular-nums; padding: 0 4px; }
+.zoom-fit { font-size: 11px; width: auto; padding: 0 8px; border-radius: 20px; font-weight: 500; }
