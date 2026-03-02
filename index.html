@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pingting Create · AI 画板</title>
+
+    <!-- 样式文件 -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/toolbar.css">
+    <link rel="stylesheet" href="css/canvas.css">
+    <link rel="stylesheet" href="css/ai-panel.css">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <!-- ============ 开始屏弹窗 ============ -->
+    <div class="start-overlay" id="startOverlay">
+        <div class="start-screen">
+
+            <!-- Logo 区域 -->
+            <div class="start-logo">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 40 40" fill="none" width="48" height="48">
+                        <circle cx="20" cy="20" r="20" fill="url(#logoGrad)" />
+                        <path d="M10 28 Q20 10 30 28" stroke="white" stroke-width="2.5" stroke-linecap="round"
+                            fill="none" />
+                        <circle cx="20" cy="20" r="3" fill="white" opacity="0.9" />
+                        <defs>
+                            <linearGradient id="logoGrad" x1="0" y1="0" x2="40" y2="40">
+                                <stop offset="0%" stop-color="#7c5cbf" />
+                                <stop offset="100%" stop-color="#4f8ef7" />
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+                <div class="logo-text">
+                    <h1>Pingting Create</h1>
+                    <p>AI 驱动的创意画板</p>
+                </div>
+            </div>
+
+            <!-- 主入口选择 -->
+            <div class="start-actions">
+                <!-- 上传图片开始 -->
+                <div class="start-card upload-card" id="uploadStartCard">
+                    <div class="start-card-icon">
+                        <svg viewBox="0 0 48 48" fill="none">
+                            <rect x="4" y="4" width="40" height="40" rx="8" fill="rgba(79,142,247,0.12)" />
+                            <path d="M16 32 L22 24 L27 29 L31 23 L38 32 Z" fill="rgba(79,142,247,0.4)" stroke="none" />
+                            <circle cx="17" cy="19" r="3" fill="rgba(79,142,247,0.5)" />
+                            <path d="M24 14 V22 M20 18 L24 14 L28 18" stroke="#4f8ef7" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </div>
+                    <div class="start-card-info">
+                        <h3>打开图片</h3>
+                        <p>从本地选择图片作为底图开始创作</p>
+                    </div>
+                    <div class="start-card-arrow">→</div>
+                    <input type="file" id="uploadStartInput" accept="image/*" style="display:none">
+                </div>
+
+                <!-- 空白画布 -->
+                <div class="start-card blank-card" id="blankCanvasCard">
+                    <div class="start-card-icon">
+                        <svg viewBox="0 0 48 48" fill="none">
+                            <rect x="4" y="4" width="40" height="40" rx="8" fill="rgba(124,92,191,0.12)" />
+                            <rect x="12" y="12" width="24" height="24" rx="3" stroke="#7c5cbf" stroke-width="2"
+                                fill="none" />
+                            <path d="M24 18 V30 M18 24 H30" stroke="#7c5cbf" stroke-width="2" stroke-linecap="round" />
+                        </svg>
+                    </div>
+                    <div class="start-card-info">
+                        <h3>空白画布</h3>
+                        <p>选择预设尺寸或自定义画布大小</p>
+                    </div>
+                    <div class="start-card-arrow">→</div>
+                </div>
+            </div>
+
+            <!-- 画布尺寸预设区域（点击"空白画布"后展开） -->
+            <div class="canvas-preset-area" id="canvasPresetArea" style="display:none">
+                <div class="preset-header">
+                    <button class="back-btn" id="backToStartBtn">
+                        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M10 12 L6 8 L10 4" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                        返回
+                    </button>
+                    <h3>选择画布尺寸</h3>
+                </div>
+
+                <!-- 预设网格 -->
+                <div class="preset-grid">
+                    <div class="preset-card" data-w="1080" data-h="1080" data-name="正方形">
+                        <div class="preset-thumb square-thumb"></div>
+                        <div class="preset-name">正方形</div>
+                        <div class="preset-size">1080 × 1080</div>
+                        <div class="preset-tag">社交媒体</div>
+                    </div>
+                    <div class="preset-card" data-w="1920" data-h="1080" data-name="横屏">
+                        <div class="preset-thumb landscape-thumb"></div>
+                        <div class="preset-name">横屏</div>
+                        <div class="preset-size">1920 × 1080</div>
+                        <div class="preset-tag">壁纸 / 展示</div>
+                    </div>
+                    <div class="preset-card" data-w="1080" data-h="1920" data-name="手机竖屏">
+                        <div class="preset-thumb portrait-thumb"></div>
+                        <div class="preset-name">手机竖屏</div>
+                        <div class="preset-size">1080 × 1920</div>
+                        <div class="preset-tag">手机壁纸</div>
+                    </div>
+                    <div class="preset-card" data-w="2480" data-h="3508" data-name="A4">
+                        <div class="preset-thumb a4-thumb"></div>
+                        <div class="preset-name">A4</div>
+                        <div class="preset-size">2480 × 3508</div>
+                        <div class="preset-tag">打印</div>
+                    </div>
+                    <div class="preset-card" data-w="3508" data-h="4960" data-name="A3">
+                        <div class="preset-thumb a3-thumb"></div>
+                        <div class="preset-name">A3</div>
+                        <div class="preset-size">3508 × 4960</div>
+                        <div class="preset-tag">大图打印</div>
+                    </div>
+                    <div class="preset-card custom-card" id="customPresetCard">
+                        <div class="preset-thumb custom-thumb">
+                            <svg viewBox="0 0 32 32" fill="none">
+                                <path d="M16 8 V24 M8 16 H24" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" />
+                            </svg>
+                        </div>
+                        <div class="preset-name">自定义</div>
+                        <div class="preset-size">自定义尺寸</div>
+                        <div class="preset-tag">任意大小</div>
+                    </div>
+                </div>
+
+                <!-- 自定义输入区域 -->
+                <div class="custom-inputs" id="customInputs" style="display:none">
+                    <div class="custom-row">
+                        <div class="input-field">
+                            <label>宽度 (px)</label>
+                            <input type="number" id="customWidth" value="1024" min="100" max="8192">
+                        </div>
+                        <div class="link-icon">×</div>
+                        <div class="input-field">
+                            <label>高度 (px)</label>
+                            <input type="number" id="customHeight" value="1024" min="100" max="8192">
+                        </div>
+                        <div class="input-field">
+                            <label>DPI</label>
+                            <select id="customDpi">
+                                <option value="72">72 (屏幕)</option>
+                                <option value="96" selected>96 (标准)</option>
+                                <option value="150">150 (高清)</option>
+                                <option value="300">300 (印刷)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="bg-options">
+                        <label>背景</label>
+                        <div class="bg-btns">
+                            <button class="bg-btn active" data-bg="white">
+                                <span class="bg-swatch white-swatch"></span>白色
+                            </button>
+                            <button class="bg-btn" data-bg="transparent">
+                                <span class="bg-swatch transparent-swatch"></span>透明
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 创建按钮 -->
+                <button class="create-btn" id="createCanvasBtn">
+                    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M10 4 V16 M4 10 H16" stroke-linecap="round" />
+                    </svg>
+                    创建画布
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ============ 主应用界面 ============ -->
+    <div class="app-container" id="appContainer" style="display:none">
+
+        <!-- 顶部工具栏 -->
+        <header class="top-toolbar" id="topToolbar">
+
+            <!-- 左侧：工具按钮 -->
+            <div class="toolbar-left">
+
+                <!-- App Logo -->
+                <div class="app-logo" title="Pingting Create">
+                    <svg viewBox="0 0 24 24" fill="none">
+                        <circle cx="12" cy="12" r="11" fill="url(#toolbarGrad)" />
+                        <path d="M6 17 Q12 6 18 17" stroke="white" stroke-width="1.8" stroke-linecap="round"
+                            fill="none" />
+                        <circle cx="12" cy="12" r="2" fill="white" opacity="0.9" />
+                        <defs>
+                            <linearGradient id="toolbarGrad" x1="0" y1="0" x2="24" y2="24">
+                                <stop offset="0%" stop-color="#7c5cbf" />
+                                <stop offset="100%" stop-color="#4f8ef7" />
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+
+                <div class="toolbar-divider"></div>
+
+                <!-- 绘图工具 -->
+                <div class="tool-group">
+                    <button class="tool-btn active" id="brushTool" title="画笔 (B)">
+                        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8">
+                            <path d="M3 17 L14 6 L17 9 L6 17 Z" stroke-linejoin="round" />
+                            <path d="M14 6 L16 3 L17 2 L18 3 L17 4 L14 6 Z" stroke-linejoin="round" />
+                            <path d="M3 17 L2 18" stroke-linecap="round" />
+                        </svg>
+                        <span class="tool-label">画笔</span>
+                    </button>
+                    <button class="tool-btn" id="eraserTool" title="橡皮擦 (E)">
+                        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8">
+                            <path d="M15 15 H7 L3 11 L10 4 L18 12 L15 15 Z" stroke-linejoin="round" />
+                            <path d="M9 13 L14 8" stroke-linecap="round" />
+                        </svg>
+                        <span class="tool-label">橡皮</span>
+                    </button>
+                    <button class="tool-btn" id="perspectiveTool" title="透视辅助">
+                        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8">
+                            <path d="M10 2 L10 18" stroke-linecap="round" stroke-dasharray="2 2" />
+                            <path d="M2 7 L18 7" stroke-linecap="round" stroke-dasharray="2 2" />
+                            <path d="M3 15 L10 7 L17 15" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                        <span class="tool-label">透视</span>
+                    </button>
+                </div>
+
+                <div class="toolbar-divider"></div>
+
+                <!-- 颜色和画笔设置 -->
+                <div class="brush-settings">
+                    <!-- 颜色选择器 -->
+                    <div class="color-picker-wrapper" title="选择颜色">
+                        <div class="color-display" id="colorDisplay" style="background:#000000;"></div>
+                        <input type="color" id="colorPicker" value="#000000">
+                    </div>
+
+                    <!-- 大小 -->
+                    <div class="slider-group">
+                        <label>大小</label>
+                        <input type="range" id="brushSize" min="1" max="100" value="5" class="slider">
+                        <span id="brushSizeValue" class="slider-val">5</span>
+                    </div>
+
+                    <!-- 不透明度 -->
+                    <div class="slider-group">
+                        <label>不透明度</label>
+                        <input type="range" id="brushOpacity" min="1" max="100" value="100" class="slider">
+                        <span id="brushOpacityValue" class="slider-val">100%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 中间：画布信息 -->
+            <div class="toolbar-center">
+                <span class="canvas-info" id="canvasInfo">1080 × 1080 px</span>
+            </div>
+
+            <!-- 右侧：操作按钮 -->
+            <div class="toolbar-right">
+                <button class="action-btn" id="undoBtn" title="撤销 (Ctrl+Z)">
+                    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8">
+                        <path d="M4 8 L8 4 L8 6 C13 6 16 9 16 14 C14 11 11 10 8 10 L8 12 Z" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                    </svg>
+                </button>
+                <button class="action-btn" id="redoBtn" title="重做 (Ctrl+Y)">
+                    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8">
+                        <path d="M16 8 L12 4 L12 6 C7 6 4 9 4 14 C6 11 9 10 12 10 L12 12 Z" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                    </svg>
+                </button>
+
+                <div class="toolbar-divider"></div>
+
+                <button class="action-btn" id="newCanvasBtn" title="新建画布">
+                    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8">
+                        <rect x="3" y="3" width="14" height="14" rx="2" />
+                        <path d="M10 7 V13 M7 10 H13" stroke-linecap="round" />
+                    </svg>
+                    <span>新建</span>
+                </button>
+
+                <button class="action-btn primary" id="exportBtn" title="导出图像">
+                    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8">
+                        <path d="M10 13 V3 M6 9 L10 13 L14 9" stroke-linecap="round" stroke-linejoin="round" />
+                        <path d="M3 15 V17 H17 V15" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                    <span>导出</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- 主工作区 -->
+        <main class="workspace" id="workspace">
+
+            <!-- AI 面板折叠按钮 -->
+            <button class="ai-panel-toggle" id="aiPanelToggle" title="切换 AI 面板">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="10 12 6 8 10 4" id="toggleArrow" />
+                </svg>
+            </button>
+
+            <!-- 画布区域 -->
+            <section class="canvas-area" id="canvasArea">
+                <div class="canvas-wrapper" id="canvasWrapper">
+                    <!-- 画布容器（用于变换） -->
+                    <div class="canvas-container" id="canvasContainer">
+                        <canvas id="mainCanvas"></canvas>
+                        <!-- 透视辅助叠加层 -->
+                        <canvas id="perspectiveCanvas"></canvas>
+                    </div>
+                </div>
+
+                <!-- 缩放控制 -->
+                <div class="zoom-controls">
+                    <button class="zoom-btn" id="zoomOut" title="缩小">−</button>
+                    <span id="zoomLevel" class="zoom-level">100%</span>
+                    <button class="zoom-btn" id="zoomIn" title="放大">+</button>
+                    <button class="zoom-btn zoom-fit" id="zoomReset" title="适应屏幕">适应</button>
+                </div>
+            </section>
+
+            <!-- 右侧 AI 面板 -->
+            <aside class="ai-panel" id="aiPanel">
+                <div class="ai-panel-inner">
+
+                    <!-- 面板头部 -->
+                    <div class="panel-header">
+                        <div class="panel-title">
+                            <span class="panel-icon">✨</span>
+                            <h3>AI 生成</h3>
+                        </div>
+                        <div class="api-status" id="apiStatus">
+                            <span class="status-dot"></span>
+                            <span class="status-text">就绪</span>
+                        </div>
+                    </div>
+
+                    <!-- 模型选择 -->
+                    <div class="panel-section">
+                        <label class="section-label">选择模型</label>
+                        <div class="model-selector">
+                            <div class="model-card active" data-model="nano-banana" id="modelNanoBanana">
+                                <div class="model-emoji">⚡</div>
+                                <div class="model-info">
+                                    <div class="model-name">nano Banana</div>
+                                    <div class="model-desc">快速生成 · 创意丰富</div>
+                                </div>
+                            </div>
+                            <div class="model-card" data-model="nano-banana-pro" id="modelNanaBananaPro">
+                                <div class="model-emoji">🎨</div>
+                                <div class="model-info">
+                                    <div class="model-name">nano Banana Pro</div>
+                                    <div class="model-desc">高质量 · 细节精准</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 提示词 -->
+                    <div class="panel-section">
+                        <label class="section-label" for="mainPrompt">描述你的想法</label>
+                        <textarea id="mainPrompt" class="prompt-textarea" rows="4"
+                            placeholder="例如：一只在星空下奔跑的狐狸，水彩风格，柔和色调..."></textarea>
+                        <div class="prompt-actions">
+                            <button class="mini-btn" id="useCanvasBtn" title="将画布内容作为参考">
+                                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8">
+                                    <rect x="2" y="2" width="12" height="12" rx="2" />
+                                    <path d="M5 11 L7 8 L9 10 L11 7 L13 11 Z" />
+                                </svg>
+                                使用画布
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 生成规则（可折叠） -->
+                    <div class="panel-section collapsible" id="rulesSection">
+                        <button class="section-toggle" id="rulesToggle">
+                            <label class="section-label">高级选项</label>
+                            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"
+                                class="toggle-icon">
+                                <path d="M4 6 L8 10 L12 6" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                        </button>
+                        <div class="collapsible-content" id="rulesContent" style="display:none">
+                            <textarea id="generationRules" class="prompt-textarea" rows="2"
+                                placeholder="生成规则（如：保持对称、暖色调...）"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- 参考图 -->
+                    <div class="panel-section">
+                        <label class="section-label">参考图 <span class="label-hint">最多 3 张</span></label>
+                        <div class="ref-grid" id="refGrid">
+                            <div class="ref-slot" data-index="0">
+                                <div class="ref-upload-area" data-index="0">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+                                        <polyline points="17 8 12 3 7 8" />
+                                        <line x1="12" y1="3" x2="12" y2="15" />
+                                    </svg>
+                                    <span>参考图 1</span>
+                                    <input type="file" accept="image/*" class="ref-input">
+                                </div>
+                                <input type="text" class="ref-desc" placeholder="描述参考意图..." disabled>
+                            </div>
+                            <div class="ref-slot" data-index="1">
+                                <div class="ref-upload-area" data-index="1">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+                                        <polyline points="17 8 12 3 7 8" />
+                                        <line x1="12" y1="3" x2="12" y2="15" />
+                                    </svg>
+                                    <span>参考图 2</span>
+                                    <input type="file" accept="image/*" class="ref-input">
+                                </div>
+                                <input type="text" class="ref-desc" placeholder="描述参考意图..." disabled>
+                            </div>
+                            <div class="ref-slot" data-index="2">
+                                <div class="ref-upload-area" data-index="2">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+                                        <polyline points="17 8 12 3 7 8" />
+                                        <line x1="12" y1="3" x2="12" y2="15" />
+                                    </svg>
+                                    <span>参考图 3</span>
+                                    <input type="file" accept="image/*" class="ref-input">
+                                </div>
+                                <input type="text" class="ref-desc" placeholder="描述参考意图..." disabled>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 生成按钮 -->
+                    <button class="generate-btn" id="generateBtn">
+                        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M10 2 L12 7 L17 7 L13 11 L15 16 L10 13 L5 16 L7 11 L3 7 L8 7 Z"
+                                stroke-linejoin="round" />
+                        </svg>
+                        生成图像
+                    </button>
+
+                    <!-- 加载状态 -->
+                    <div class="loading-state" id="loadingState" style="display:none">
+                        <div class="loading-dots">
+                            <div class="dot"></div>
+                            <div class="dot"></div>
+                            <div class="dot"></div>
+                        </div>
+                        <p>AI 正在创作中...</p>
+                    </div>
+
+                    <!-- 生成结果 -->
+                    <div class="result-area" id="resultArea" style="display:none">
+                        <div class="result-header">
+                            <span class="result-label">生成结果</span>
+                            <span class="result-model" id="resultModel"></span>
+                        </div>
+                        <div class="result-preview">
+                            <img id="resultImage" src="" alt="AI 生成结果">
+                        </div>
+                        <div class="result-actions">
+                            <button class="result-btn primary" id="applyToCanvasBtn">
+                                应用到画布
+                            </button>
+                            <button class="result-btn" id="saveResultBtn">
+                                保存图片
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+        </main>
+
+        <!-- 透视辅助面板（浮动，放在 appContainer 内部） -->
+        <div class="perspective-panel" id="perspectivePanel">
+            <div class="persp-title">透视辅助</div>
+            <div class="persp-options">
+                <button class="persp-btn" data-type="none">关闭</button>
+                <button class="persp-btn" data-type="one-point">一点</button>
+                <button class="persp-btn" data-type="two-point">两点</button>
+                <button class="persp-btn" data-type="three-point">三点</button>
+            </div>
+        </div>
+
+        <!-- 底部状态栏 -->
+        <footer class="status-bar">
+            <span id="statusText">就绪</span>
+            <span class="status-divider">·</span>
+            <span id="canvasSizeStatus">画布: 1080 × 1080 px</span>
+        </footer>
+    </div>
+
+    <!-- 应用脚本 -->
+    <script src="js/canvas-manager.js" type="module"></script>
+    <script src="js/ai-service.js" type="module"></script>
+    <script src="js/app.js" type="module"></script>
+
+</body>
+
+</html>
